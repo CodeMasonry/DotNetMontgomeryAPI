@@ -1,9 +1,13 @@
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
+using Dapper;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.IdentityModel.Tokens;
 using MontgomeryAPI.Data;
+using MontgomeryAPI.Dto;
 
 namespace MontgomeryAPI.Helpers
 {
@@ -61,6 +65,39 @@ namespace MontgomeryAPI.Helpers
             SecurityToken token = tokenHandler.CreateToken(descriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        public bool SetPassword(UserForLoginDto userForSetPassword)
+        {
+            byte[] passwordSalt = new byte[128 / 8];
+                    using(RandomNumberGenerator rng = RandomNumberGenerator.Create()) 
+                    {
+                        rng.GetNonZeroBytes(passwordSalt);
+                    }
+
+                    byte[] passwordHash = GetPasswordHash(userForSetPassword.Password, passwordSalt);
+
+                    string sqlAddAuth = @"
+                        EXEC TutorialAppSchema.spRegistration_Upsert
+                        @Email = @EmailParam, 
+                        @PasswordHash = @PasswordHashParam, 
+                        @PasswordSalt = @PasswordSaltParam";
+
+
+                    DynamicParameters sqlParameters = new DynamicParameters();
+
+                    // SqlParameter emailParameter = new SqlParameter("@EmailParam", SqlDbType.VarBinary);
+                    // emailParameter.Value = userForLogin.Email;
+                    // sqlParameters.Add(emailParameter);
+                    sqlParameters.Add("@EmailParam", userForSetPassword.Email, DbType.String);
+                    sqlParameters.Add("@PasswordHashParam", passwordHash, DbType.Binary); //Binary is expected for a VARBTYEARRAY
+                    sqlParameters.Add("@PasswordSaltParam", passwordSalt, DbType.Binary);
+                    
+                    
+
+                    return _dapper.ExecuteSQLWithParameters(sqlAddAuth, sqlParameters);
+                    
+                    
         }
 
         

@@ -1,4 +1,4 @@
-namespace DotNetAPI.Dto
+namespace MontgomeryAPI.Dto
 {
     public partial class UserForRegistrationDto
     {
@@ -11,8 +11,6 @@ namespace DotNetAPI.Dto
         
         public int SubAgencyId {get; set;}
         public int JobTitleId {get; set;}
-        public string Department {get; set;} = "";
-
         public decimal Salary {get; set;}
     }
 }

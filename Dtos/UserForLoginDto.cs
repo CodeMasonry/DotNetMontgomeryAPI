@@ -1,4 +1,4 @@
-namespace DotNetAPI.Dto
+namespace MontgomeryAPI.Dto
 {
     public partial class UserForLoginDto
     {
