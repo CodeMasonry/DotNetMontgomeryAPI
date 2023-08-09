@@ -9,7 +9,8 @@ namespace DotNetAPI.Dto
         public string LastName {get; set;} = "";
         public string Gender {get; set;} = "";
         
-        public string JobTitle {get; set;} = "";
+        public int SubAgencyId {get; set;}
+        public int JobTitleId {get; set;}
         public string Department {get; set;} = "";
 
         public decimal Salary {get; set;}
